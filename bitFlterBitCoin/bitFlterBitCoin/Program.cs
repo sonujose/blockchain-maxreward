@@ -40,7 +40,7 @@ namespace bitFlterBitCoin
                 }
             }
             maxReward = maxReward + currentRewardPoint;
-            Console.Write("Max possible reward for creating a block is {0}", maxReward);           
+            Console.Write("Max possible reward for creating a block is {0} BTC", maxReward);           
             Console.ReadLine();
         }        
     }
