@@ -14,11 +14,10 @@ namespace bitFlterBitCoin
             Transaction[] TransactionsList = Block.GetInitialData();
 
             int TransactionsLength = TransactionsList.Length;            
+            long maxTransactions = 500000;                   
+            double maxReward = 0;
 
-            long maxTransactions = 500000;
             int[] array = new int[TransactionsLength];
-            double largestSum = 0;
-            int[] finalPattern = new int[0];
             for (var i = 0; i < TransactionsLength; ++i)
             {
                 array[i] = i;
@@ -27,43 +26,113 @@ namespace bitFlterBitCoin
 
             for (int i = TransactionsLength-1; i > 2; i--)
             {
-                output = CombinationEngine.CombinationsUtil(array, i, 0, new int[0], new List<int[]>());
-                int sum = 0;
+                output = TransactionCalculationsEngine.CombinationsUtil(array, i, 0, new int[0], new List<int[]>());
+                long sum = 0;
                 foreach (var item in output.ToArray())
-                {
-                    for (int j = 0; j < item.Length; j++)
-                    {
-                        sum += TransactionsList[item[j]].Size;
-                        if (sum > maxTransactions) {
-                            break;
-                        }
-                    }
+                {                    
+                    sum = TransactionCalculationsEngine.geTransactionBytes(item, TransactionsList);
                     if(sum <= maxTransactions) {
-                        double value = CombinationEngine.getTransactionValue(item, TransactionsList);
-                        if (value > largestSum) {
-                            largestSum = value;
-                            finalPattern = item;
+                        double value = TransactionCalculationsEngine.getTransactionValue(item, TransactionsList);
+                        if (value > maxReward) {
+                            maxReward = value;                           
                         };
                     }                  
                 }
             }
-            largestSum = largestSum + 12.5;
-            Console.Write("the largets vale is {0}, final pattern", largestSum);
-            Console.Write("final pattern {0}", finalPattern);
-            Console.Write("\n\n");
+            maxReward = maxReward + 12.5;
+            Console.Write("Max possible reward for creating a block is {0}", maxReward);           
             Console.ReadLine();
         }        
     }
-
+    
+    /// <summary>
+    /// POCO for transaction
+    /// </summary>
     public class Transaction
     {
         public int Id { get; set; }
         public int Size { get; set; }
         public double Fee { get; set; }
     }
+
+    public static class TransactionCalculationsEngine
+    {   
+        /// <summary>
+        /// Method to genearte possible combinations for particular size
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="size"></param>
+        /// <param name="start"></param>
+        /// <param name="initialStuff"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        public static List<int[]> CombinationsUtil(int[] arr, int size, int start, int[] initialStuff, List<int[]> output)
+        {
+
+            if (initialStuff.Length >= size)
+            {
+                output.Add(initialStuff);
+            }
+            else
+            {
+
+                for (int i = start; i < arr.Length; i++)
+                {
+                    var currentStuff = initialStuff.ToList();
+                    currentStuff.Add(arr[i]);
+                    output = CombinationsUtil(arr, size, i + 1, currentStuff.ToArray(), output);
+                }
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Returns Transaction Reward for a particular combination
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="Transactions"></param>
+        /// <returns></returns>
+        public static double getTransactionValue(int[] pattern, Transaction[] Transactions)
+        {
+            double val = 0;
+
+            foreach (var item in pattern)
+            {
+                val += Transactions[item].Fee;
+            }
+
+            return val;
+        }
         
+        /// <summary>
+        /// Return Size for selected pattern
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="Transactions"></param>
+        /// <returns></returns>
+        public static long geTransactionBytes(int[] pattern, Transaction[] Transactions)
+        {
+            long val = 0;
+
+            foreach (var item in pattern)
+            {
+                val += Transactions[item].Size;
+            }
+
+            return val;
+        }
+    }
+    
+    /// <summary>
+    /// Accessor
+    /// </summary>
     public class BlockDataAccessor
-    {
+    {   
+        /// <summary>
+        /// Returns Transaction Table
+        /// </summary>
+        /// <returns></returns>
         public Transaction[] GetInitialData()
         {
             Transaction[] Transactions = new Transaction[] {
@@ -82,40 +151,5 @@ namespace bitFlterBitCoin
             };
             return Transactions;
         }
-    }
-
-    public static class CombinationEngine
-    {
-        public static List<int[]> CombinationsUtil(int[] arr, int size, int start, int[] initialStuff, List<int[]> output)
-        {
-            
-            if(initialStuff.Length >= size)
-            {
-                output.Add(initialStuff);
-            } else
-            {
-                
-                for(int i = start; i < arr.Length; i++)
-                {
-                    var currentStuff = initialStuff.ToList();
-                    currentStuff.Add(arr[i]);    
-                    output = CombinationsUtil(arr, size, i + 1, currentStuff.ToArray(), output);
-                }
-            }
-
-            return output;            
-        }
-
-        public static double getTransactionValue(int[] pattern, Transaction[] Transactions)
-        {
-            double val = 0;
-
-            foreach (var item in pattern)
-            {
-                val += Transactions[item].Fee;
-            }
-
-            return val;
-        }
-    }
+    }    
 }
