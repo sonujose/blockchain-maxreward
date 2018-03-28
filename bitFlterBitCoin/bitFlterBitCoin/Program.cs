@@ -10,23 +10,23 @@ namespace bitFlterBitCoin
     {
         static void Main()
         {
-            BlockDataAccessor Block = new BlockDataAccessor();
-            Transaction[] TransactionsList = Block.GetInitialData();
+            BlockDataAccessor Accessor = new BlockDataAccessor();
+            Block BlockData = Accessor.GetInitialData();
 
-            int TransactionsLength = TransactionsList.Length;            
-            long maxTransactions = 500000;                   
-            double maxReward = 0;
-
-            int[] array = new int[TransactionsLength];
-            for (var i = 0; i < TransactionsLength; ++i)
+            Transaction[] TransactionsList = BlockData.TransactionsList;
+            double currentRewardPoint = BlockData.CurrentrewardPoint;                 
+            long maxTransactions = BlockData.TransactionLimit;                   
+          
+            int[] array = new int[TransactionsList.Length];
+            for (var i = 0; i < TransactionsList.Length; ++i)
             {
                 array[i] = i;
             }
-            List<int[]> output;
+            double maxReward = 0;
 
-            for (int i = TransactionsLength-1; i > 2; i--)
+            for (int i = TransactionsList.Length - 1; i > 2; i--)
             {
-                output = TransactionCalculationsEngine.CombinationsUtil(array, i, 0, new int[0], new List<int[]>());
+                List<int[]> output = TransactionCalculationsEngine.CombinationsUtil(array, i, 0, new int[0], new List<int[]>());
                 long sum = 0;
                 foreach (var item in output.ToArray())
                 {                    
@@ -39,7 +39,7 @@ namespace bitFlterBitCoin
                     }                  
                 }
             }
-            maxReward = maxReward + 12.5;
+            maxReward = maxReward + currentRewardPoint;
             Console.Write("Max possible reward for creating a block is {0}", maxReward);           
             Console.ReadLine();
         }        
@@ -54,7 +54,20 @@ namespace bitFlterBitCoin
         public int Size { get; set; }
         public double Fee { get; set; }
     }
+    
+    /// <summary>
+    /// POCO Block
+    /// </summary>
+    public class Block
+    {
+        public Transaction[] TransactionsList { get; set; }
+        public long TransactionLimit { get; set; }
+        public double CurrentrewardPoint { get; set; }
+    }
 
+    /// <summary>
+    /// Engine
+    /// </summary>
     public static class TransactionCalculationsEngine
     {   
         /// <summary>
@@ -68,7 +81,6 @@ namespace bitFlterBitCoin
         /// <returns></returns>
         public static List<int[]> CombinationsUtil(int[] arr, int size, int start, int[] initialStuff, List<int[]> output)
         {
-
             if (initialStuff.Length >= size)
             {
                 output.Add(initialStuff);
@@ -133,7 +145,7 @@ namespace bitFlterBitCoin
         /// Returns Transaction Table
         /// </summary>
         /// <returns></returns>
-        public Transaction[] GetInitialData()
+        public Block GetInitialData()
         {
             Transaction[] Transactions = new Transaction[] {
                 new Transaction {Id = 1, Size = 57247, Fee = 0.0887 },
@@ -149,7 +161,14 @@ namespace bitFlterBitCoin
                 new Transaction {Id = 11, Size = 190457, Fee = 0.2933 },
                 new Transaction {Id = 12, Size = 40572, Fee = 0.0686 },
             };
-            return Transactions;
+
+            Block BlockData = new Block
+            {
+                TransactionsList = Transactions,
+                CurrentrewardPoint = 12.5,
+                TransactionLimit = 1000000
+            };
+            return BlockData;
         }
     }    
 }
