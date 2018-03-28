@@ -1,0 +1,6 @@
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\bin\Debug\bitFlterBitCoin.exe.config
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\bin\Debug\bitFlterBitCoin.exe
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\bin\Debug\bitFlterBitCoin.pdb
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\obj\Debug\bitFlterBitCoin.csprojResolveAssemblyReference.cache
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\obj\Debug\bitFlterBitCoin.exe
+E:\project_sd\bitFlterBitCoin\bitFlterBitCoin\obj\Debug\bitFlterBitCoin.pdb
